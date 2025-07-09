@@ -1,0 +1,195 @@
+<?php
+session_start();
+if (!isset($_SESSION['username'])) {
+    header('location:login.php');
+}
+?>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Category Page</title>
+    <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+    <script src="./bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="./fontawesome/css/all.css">
+    <style>
+        .rainbow {
+            background: linear-gradient(90deg,
+                    red,
+                    orange,
+                    yellow,
+                    green,
+                    blue,
+                    indigo,
+                    violet);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            font-size: 2rem;
+            animation: rainbowShift 5s linear infinite;
+        }
+
+        @keyframes rainbowShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="text-center mt-5 text-warning fw-bold display-4 rainbow">
+        Welcome Page, <?php echo htmlspecialchars($_SESSION['username']); ?>
+    </h1>
+
+    <div class="container lgbt-bg text-center rounded-4 shadow p-5 my-5">
+        <h2 class="mb-3">🏳️‍🌈 Phone Category Websites</h2>
+        <p class="lead">Celebrate tech and pride together 🌈📱</p>
+    </div>
+
+
+    <div class="container my-5">
+        <div class="input-group shadow-sm">
+            <input type="text" class="form-control form-control-lg search-text" placeholder="Search phones..." />
+            <button class="btn btn-warning search-btn px-4" type="button">Search</button>
+        </div>
+    </div>
+    <div class="container d-flex flex-wrap justify-content-center gap-3">
+        <button class="btn btn-outline-primary btn-lg px-4 all-items">All Items</button>
+        <button class="btn btn-outline-primary btn-lg px-4 samsung-items">Samsung</button>
+        <button class="btn btn-outline-primary btn-lg px-4 redmi-items">Redmi</button>
+        <button class="btn btn-outline-primary btn-lg px-4 apple-items">Apple</button>
+        <button class="btn btn-outline-primary btn-lg px-4 oneplus-items">OnePlus</button>
+    </div>
+
+    <div class="container">
+        <div class="row my-2 d-flex flex-wrap">
+
+        </div>
+    </div>
+    <script>
+        const url = "./database/items.json";
+        const allitems = async () => {
+            const res = await fetch(url);
+            const data = await res.json();
+            const items = data['items'];
+            //reset original values of selectd items
+            document.querySelector('.row').innerHTML = ''
+
+            items.forEach((item) => {
+                const div = document.createElement('div');
+                div.classList.add('col-lg-3')
+                div.classList.add('p-4')
+                div.innerHTML = `
+                <div class="card " >
+               <img src="${item.img}"  class="card-img-top"  style="width:100%;height:350px">
+               <div class="card-body " >
+                <h5 class="card-title " > ${item.name}</h5><br>
+               <p class="card-text">${item.price}</p><br>
+                <a href="#" class="btn btn-primary">Details</a>
+               </div>
+               </div>
+                
+                `
+
+
+
+                document.querySelector(".row").appendChild(div)
+
+            })
+        }
+        allitems()
+        const selectditems = async (param) => {
+            const res = await fetch(url);
+            const data = await res.json();
+            const items = data['items'];
+            console.log(items);
+            //reset original values of selectd items
+            document.querySelector('.row').innerHTML = ''
+            const filter_items = items.filter((item) => item.category == param)
+            filter_items.forEach((item) => {
+
+
+
+                const div = document.createElement('div');
+                div.classList.add('col-lg-3')
+                div.classList.add('p-2')
+                div.innerHTML = `
+                <div class="card" style="width: 100%;">
+            <img src="${item.img}"  class="img" style="width:100%;height:350px">
+             <div class="card-body">
+                <h5 class="card-title"> ${item.name}</h5>
+             <p class="card-text">${item.price}</p>
+            <a href="#" class="btn btn-primary">Details</a>
+             </div>
+           </div>
+                
+                `
+
+
+                document.querySelector(".row").appendChild(div)
+
+            })
+        }
+
+        const alBtn = document.querySelector('.all-items')
+        alBtn.addEventListener('click', (e) => {
+            e.preventDefault()
+            allitems()
+        })
+        const samsungBtn = document.querySelector('.samsung-items')
+        samsungBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tiger = 'samsung';
+            selectditems(tiger)
+
+        })
+        const redmiBtn = document.querySelector('.redmi-items')
+        redmiBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tiger = 'redmi';
+            selectditems(tiger)
+        })
+        const appleBtn = document.querySelector('.apple-items')
+        appleBtn.addEventListener('click', (e) => {
+            e.preventDefault()
+            const tiger = 'apple';
+            selectditems(tiger)
+        })
+        const oneplusBtn = document.querySelector('.oneplus-items')
+        oneplusBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tiger = 'oneplus';
+            selectditems(tiger)
+        })
+        const searchBtn = document.querySelector(".search-btn");
+        searchBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const cat = document.querySelector(".search-text").value;
+
+
+            if (cat == '')
+                allitems()
+            else
+                selectditems(cat)
+
+        })
+    </script>
+
+    <div class="container">
+        <a href="logout.php" class="btn btn-primary align-center" mt-5>Logout</a>
+    </div>
+</body>
+
+</html>
